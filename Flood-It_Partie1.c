@@ -21,7 +21,7 @@ int main(int argc,char**argv){
     temps_final;   /* Temps final en micro-secondes */
   float
     temps_cpu;     /* Temps total en secondes */ 
- 
+  
 
 
   if(argc!=7){
@@ -76,14 +76,14 @@ int main(int argc,char**argv){
   
   
   /* test biblio S_Zsg */
-  printf("%d essais\n", sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
+  //printf("%d essais\n", sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
   
-  /*if (exo==0){
+  if (exo==0){
      printf("%d essais\n", sequence_aleatoire_rec(M, G, dim, nbcl, aff)); 
   }
   else if (exo==2) {
   	printf("%d essais\n", sequence_aleatoire_imp(M, G, dim, nbcl, aff));
-  }*/
+  }
   
   temps_final = clock ();
   temps_cpu = (temps_final - temps_initial) * 1e-6;

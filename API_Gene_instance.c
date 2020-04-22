@@ -3,7 +3,7 @@
 
 void Gene_instance_genere_matrice(int dim, int nbcl, int nivdif, int graine, int **M){
   int i,j,k,m,c,di,si,prof,larg;
-
+  
   int diam= (nivdif/100.0)*dim;
   if (diam==0) diam=1;
   srand(graine);

@@ -65,16 +65,19 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 	int i,j;
 	ListeCase *p = (ListeCase *) malloc(sizeof(ListeCase));
 	init_liste(p);
-	ajoute_en_tete(p, k, l);
-	ajoute_Zsg(Z, k, l);
+	if(!appartient_Zsg(k, l, Z)) {
+		ajoute_en_tete(p, k, l);
+	}
+	//ajoute_Zsg(Z, k, l);
 	while(!test_liste_vide(p)) {
 		enleve_en_tete(p, &i, &j);
-		ajoute_Zsg(Z, i+1, j);
+		ajoute_Zsg(Z, i, j);
 		nbCases += 1;
 		
 		if(i<dim-1 && !test_est_dans(i+1, j, p)) {
 			if(cl == M[i+1][j] && !appartient_Zsg(i+1, j, Z)) {
 				ajoute_en_tete(p, i+1, j);
+				//ajoute_Zsg(Z, i+1, j);
 			}
 			else if(cl != M[i+1][j] && !appartient_Bordure(i+1, j, M[i+1][j], Z)) {
 				ajoute_Bordure(Z, i+1, j, M[i+1][j]);
@@ -150,7 +153,7 @@ int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
 	 	}
 	 	
 	 	cpt += 1;
-	 	SDL_Delay(100);
+	 	//SDL_Delay(100);
 	}
 	detruit_S_Zsg(S);
 	return cpt;		
