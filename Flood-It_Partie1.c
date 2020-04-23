@@ -75,16 +75,7 @@ int main(int argc,char**argv){
   temps_initial = clock ();
   
   
-  /* test biblio S_Zsg */
-  //printf("%d essais\n", sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
-  
-  /*if (exo==0){
-     printf("%d essais\n", sequence_aleatoire_rec(M, G, dim, nbcl, aff)); 
-  }
-  else if (exo==2) {
-  	printf("%d essais\n", sequence_aleatoire_imp(M, G, dim, nbcl, aff));
-  }
-  else if (*/
+  /* test sequence_aleatoire */
   switch(exo) {
   	case(1):
   		//printf("exo %d : %d essais\n", exo, sequence_aleatoire_rec(M, G, dim, nbcl, aff));
