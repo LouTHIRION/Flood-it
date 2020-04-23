@@ -48,13 +48,6 @@ int main(int argc,char**argv){
 
   Gene_instance_genere_matrice(dim, nbcl, nivdif, graine, M);
   
-  /* test fonct trouve_zone_rec */
-  /*int taille = 0;
-  ListeCase *L = malloc(sizeof(ListeCase));
-  init_liste(L);
-  trouve_zone_rec(M, dim, 1, 7, &taille, L);
-  printf("taille %d\n", taille);
-  affiche_liste(L);*/
   
   /* Affichage de la grille */
 
