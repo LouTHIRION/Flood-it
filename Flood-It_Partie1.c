@@ -78,15 +78,34 @@ int main(int argc,char**argv){
   /* test biblio S_Zsg */
   //printf("%d essais\n", sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
   
-  if (exo==0){
+  /*if (exo==0){
      printf("%d essais\n", sequence_aleatoire_rec(M, G, dim, nbcl, aff)); 
   }
   else if (exo==2) {
   	printf("%d essais\n", sequence_aleatoire_imp(M, G, dim, nbcl, aff));
   }
+  else if (*/
+  switch(exo) {
+  	case(1):
+  		//printf("exo %d : %d essais\n", exo, sequence_aleatoire_rec(M, G, dim, nbcl, aff));
+  		printf("%d ", sequence_aleatoire_rec(M, G, dim, nbcl, aff));
+  		break;
+  	case(2):
+  		//printf("exo %d : %d essais\n", exo, sequence_aleatoire_imp(M, G, dim, nbcl, aff));
+  		printf("%d ", sequence_aleatoire_imp(M, G, dim, nbcl, aff));
+  		break;
+  	case(3):
+  		//printf("exo %d : %d essais\n", exo, sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
+  		printf("%d ", sequence_aleatoire_rapide(M, G, dim, nbcl, aff));
+  		break;
+  	default:
+  		printf("Pas d'exercice selectionne.\n");
+  		break;
+  }
   
   temps_final = clock ();
   temps_cpu = (temps_final - temps_initial) * 1e-6;
+  //printf("temps cpu : %f\n",temps_cpu);
   printf("%f\n",temps_cpu);
  
  /* Desalocation de la matrice */

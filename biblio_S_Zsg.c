@@ -68,7 +68,6 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 	if(!appartient_Zsg(k, l, Z)) {
 		ajoute_en_tete(p, k, l);
 	}
-	//ajoute_Zsg(Z, k, l);
 	while(!test_liste_vide(p)) {
 		enleve_en_tete(p, &i, &j);
 		ajoute_Zsg(Z, i, j);
@@ -77,7 +76,6 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 		if(i<dim-1 && !test_est_dans(i+1, j, p)) {
 			if(cl == M[i+1][j] && !appartient_Zsg(i+1, j, Z)) {
 				ajoute_en_tete(p, i+1, j);
-				//ajoute_Zsg(Z, i+1, j);
 			}
 			else if(cl != M[i+1][j] && !appartient_Bordure(i+1, j, M[i+1][j], Z)) {
 				ajoute_Bordure(Z, i+1, j, M[i+1][j]);
@@ -87,7 +85,6 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 		if(i>0 && !test_est_dans(i-1, j, p)) {
 			if(cl == M[i-1][j] && !appartient_Zsg(i-1, j, Z)) {
 				ajoute_en_tete(p, i-1, j);
-				//ajoute_Zsg(Z, i-1, j);
 			}
 			else if(cl != M[i-1][j] && !appartient_Bordure(i-1, j, M[i-1][j], Z)) {
 				ajoute_Bordure(Z, i-1, j, M[i-1][j]);
@@ -97,7 +94,6 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 		if(j<dim-1 && !test_est_dans(i, j+1, p)) {
 			if(cl == M[i][j+1] && !appartient_Zsg(i, j+1, Z)) {
 				ajoute_en_tete(p, i, j+1);
-				//ajoute_Zsg(Z, i, j+1);
 			}
 			else if(cl != M[i][j+1] && !appartient_Bordure(i, j+1, M[i][j+1], Z)) {
 				ajoute_Bordure(Z, i, j+1, M[i][j+1]);
@@ -107,7 +103,6 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 		if(j>0 && !test_est_dans(i, j-1, p)) {
 			if(cl == M[i][j-1] && !appartient_Zsg(i, j-1, Z)) {
 				ajoute_en_tete(p, i, j-1);
-				//ajoute_Zsg(Z, i, j-1);
 			}
 			else if(cl != M[i][j-1] && !appartient_Bordure(i, j-1, M[i][j-1], Z)) {
 				ajoute_Bordure(Z, i, j-1, M[i][j-1]);
@@ -129,7 +124,6 @@ int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
 	init_Zsg(S, dim, nbcl);
 	taille_Zsg = agrandit_Zsg(M, S, M[0][0], 0, 0);
 	while(taille_Zsg < dim*dim) {
-		printf("%d %d\n", taille_Zsg, dim*dim);
 		while(cl == M[0][0]) { // tirage de la couleur
   			cl = rand() % nbcl;
   		}
@@ -150,10 +144,9 @@ int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
 	 	
 	 	if(aff == 1) {
 	 		Grille_redessine_Grille();
+	 		SDL_Delay(100);
 	 	}
-	 	
 	 	cpt += 1;
-	 	//SDL_Delay(100);
 	}
 	detruit_S_Zsg(S);
 	return cpt;		

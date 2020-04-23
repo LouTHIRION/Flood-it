@@ -14,7 +14,7 @@ void trouve_zone_rec(int **M, int nbcase,int i, int j, int *taille, ListeCase *L
 int sequence_aleatoire_rec(int **M, Grille *G, int dim, int nbcl, int aff);
 
 /* Version derecursifier de la fonction trouve_zone_rec */
-void trouve_zone_imp(int **M, int nbcase,int i, int j, int *taille, ListeCase *L);
+int trouve_zone_imp(int **M, int nbcase,int i, int j, int *taille, ListeCase *L);
 
 /* Meme fonction que plus haut mais utilisant la version derecursifier de trouve_zone */
 int sequence_aleatoire_imp(int **M, Grille *G, int dim, int nbcl, int aff);
