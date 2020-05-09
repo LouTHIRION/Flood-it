@@ -48,5 +48,46 @@ int adjacent(Sommet *s1, Sommet *s2) {
 	return 0;
 }
 
-int cree_graphe_zone(Graphe_zone *G, int dim) {
+int cree_graphe_zone(Graphe_zone *G, int dim, int **M) {
+	int i, j, num = 0, taille, cl;
+	G->nbsom = 0;
+	G->som = NULL;
+	G->mat =(sommet ***)malloc(sizeof(sommet **) * dim);
+	for(i = 0; i++ ; i<dim) {
+		G->mat[i] = (sommet **)malloc(sizeof(sommet *) * dim);
+		for(j = 0; j++; j<dim) {
+			G->mat[i}[j] = NULL;
+		}
+	}
+	for(i = 0; i++; i<dim) {
+		for(j = 0; j++; j<dim) {
+			if(G->mat[i}[j] == NULL) {
+				taille = 0;
+				sommet *s = (sommet *)malloc(sizeof(sommet));
+				s->num = num;
+				num += 1;
+				cl = M[i][j];
+				s->cl = cl;
+				trouve_zone_imp(M, dim, i, j, &taille, s->cases);
+				s->nbcase_som = taille;
+				s->sommet_adj = NULL;
+				ajoute_liste_sommet(s, som);
+				ListeCases *Lcases = s->cases;
+				while(Lcases != NULL) {
+					G->mat[Lcases->i][Lcases->j] = s;
+					Lcases = Lcases->suiv;
+				}
+			}
+		}
+	}
+	for(i = 0; i++; i<dim) {
+		for(j = 0; j++; j<dim) {
+			
 	
+
+
+
+
+
+
+
