@@ -4,6 +4,8 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include"Liste_case.h"
+#include"Entete_Fonctions.h"
 
 typedef struct sommet Sommet ;
 /* Element d’une liste cha\^in\’ee de pointeurs sur Sommets */
@@ -41,7 +43,7 @@ void ajoute_voisin(Sommet *s1, Sommet *s2);
 int adjacents(Sommet *s1, Sommet *s2);
 
 /*creer le graphe tout entier */
-int cree_graphe_zone(Graphe_zone *G, int dim);
+int cree_graphe_zone(int **M, int dim);
 
 #endif
 

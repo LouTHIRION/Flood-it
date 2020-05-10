@@ -4,7 +4,7 @@
 
 #include "API_Grille.h"
 #include "API_Gene_instance.h"
-
+#include "biblio_graphe.h"
  
  
 int main(int argc,char**argv){
@@ -61,7 +61,8 @@ int main(int argc,char**argv){
      A VOUS DE JOUER
 
   */
-
+  	
+	cree_graphe_zone(
 
   Grille_attente_touche();
  

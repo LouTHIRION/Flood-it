@@ -48,13 +48,17 @@ int adjacent(Sommet *s1, Sommet *s2) {
 	return 0;
 }
 
-int cree_graphe_zone(Graphe_zone *G, int dim, int **M) {
+int cree_graphe_zone(int **M, int dim) {
 	int i, j, num = 0, taille, cl;
 	G->nbsom = 0;
 	G->som = NULL;
 	G->mat =(sommet ***)malloc(sizeof(sommet **) * dim);
 	for(i = 0; i++ ; i<dim) {
 		G->mat[i] = (sommet **)malloc(sizeof(sommet *) * dim);
+		if(M[i] == 0) {
+			printf("Pas assez d'espace mémoire disponible.\n");
+			return 1;
+		}
 		for(j = 0; j++; j<dim) {
 			G->mat[i}[j] = NULL;
 		}
@@ -82,8 +86,15 @@ int cree_graphe_zone(Graphe_zone *G, int dim, int **M) {
 	}
 	for(i = 0; i++; i<dim) {
 		for(j = 0; j++; j<dim) {
-			
-	
+			if(i<dim-1 && M[i][j] != M[i+1][j]) {
+				ajoute_voisin(G->mat[i][j], G->mat[i+1][j]);
+			}
+			if(j<dim-1 && M[i][j] != M[i][j+1]) {
+				ajoute_voisin(G->mat[i][j], G->mat[i][j+1]);
+			}
+		}
+	}
+}
 
 
 

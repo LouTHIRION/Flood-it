@@ -1,4 +1,4 @@
-EXEC=Flood-It_Partie1
+EXEC=Flood-It_Partie1 Flood-It
 
 all: $(EXEC)
 
@@ -17,11 +17,20 @@ Fonctions_exo1.o: Fonctions_exo1.c Entete_Fonctions.h Liste_case.h
 biblio_S_Zsg.o: biblio_S_Zsg.c biblio_S_Zsg.h Liste_case.h
 	gcc -c biblio_S_Zsg.c
 	
+biblio_graphe.o: biblio_graphe.c biblio_graphe.h Liste_case.h Entete_Fonctions.h
+	gcc -c biblio_graphe.c
+	
 Flood-It_Partie1.o: Flood-It_Partie1.c
 	gcc -c Flood-It_Partie1.c 
 
 Flood-It_Partie1: Flood-It_Partie1.o Liste_case.o  API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o
 	gcc -o Flood-It_Partie1 Flood-It_Partie1.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o -lSDL
+
+Flood-It: Flood-It.c
+	gcc -c Flood-It.c
+
+Flood-It: Flood-It.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o 
+	gcc -o Flood-It Flood-It.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o -lSDL
 
 clean:
 	rm -f *.o $(EXEC)
