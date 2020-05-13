@@ -48,6 +48,7 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 			printf("Pas assez d'espace mémoire disponible.\n");
 		}
 		for(j = 0; j++; j<dim) {
+			printf("1\n");
 			G->mat[i][j] = NULL;
 		}
 	}
@@ -63,7 +64,8 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 				trouve_zone_imp(M, dim, i, j, &taille, &s->cases);
 				s->nbcase_som = taille;
 				s->sommet_adj = NULL;
-				//ajoute_liste_sommet(s, som);
+				printf("1\n");
+				ajoute_liste_sommet(&G->som, s);
 				ListeCase Lcases = s->cases;
 				while(Lcases != NULL) {
 					G->mat[Lcases->i][Lcases->j] = s;
@@ -82,12 +84,36 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 			}
 		}
 	}
+	return G;
 }
 
+/*void afficher_liste_sommet(Cellule_som *ListeSom) {
+	while(ListeSom != NULL) {
+		afficher_sommet(ListeSom->sommet);
+		ListeSom = ListeSom->suiv;
+	}
+}*/
 
 void afficher_graphe_zone(Graphe_zone *g_z) {
 	printf("Nombre de sommet-zone : %d\n", g_z->nbsom);
-	
+	printf("Zsg : \n");
+	Cellule_som *ListeSom = g_z->som;
+	while(ListeSom != NULL) {
+		afficher_sommet(ListeSom->sommet);
+		ListeSom = ListeSom->suiv;
+	}
+}
+
+void afficher_sommet(Sommet *s) {
+	printf("Sommet n°%d . Couleur : %d . Nb de cases : %d\n", s->num, s->cl, s->nbcase_som);
+	Cellule_som *som_adj = s->sommet_adj;
+	printf("Sommets adjacents : ");
+	while(som_adj != NULL) {
+		printf("n°%d", som_adj->sommet->num);
+	}
+	printf("\n");
+	affiche_liste(&s->cases);
+}
 
 
 
