@@ -61,8 +61,7 @@ int main(int argc,char**argv){
      A VOUS DE JOUER
 
   */
-  	
-	cree_graphe_zone(
+	Graphe_zone *graphe = cree_graphe_zone(M, dim, nbcl);
 
   Grille_attente_touche();
  
