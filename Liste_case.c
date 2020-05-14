@@ -64,7 +64,7 @@ int test_est_dans(int i, int j, ListeCase *L) {
 void affiche_liste(ListeCase *L) {
 	Elnt_liste *cour = (*L);
 	while(cour != NULL) {
-		printf("i: %d, j: %d\n", cour->i, cour->j);
+		printf("(%d, %d) ", cour->i, cour->j);
 		cour = cour->suiv;
 	}
 }
