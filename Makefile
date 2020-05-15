@@ -26,7 +26,7 @@ Flood-It_Partie1.o: Flood-It_Partie1.c
 Flood-It_Partie1: Flood-It_Partie1.o Liste_case.o  API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o
 	gcc -o Flood-It_Partie1 Flood-It_Partie1.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o -lSDL
 
-Flood-It: Flood-It.c
+Flood-It.o: Flood-It.c
 	gcc -c Flood-It.c
 
 Flood-It: Flood-It.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_graphe.o

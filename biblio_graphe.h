@@ -34,6 +34,7 @@ struct sommet
 
 typedef struct graphe_zone
 {
+	int dim;           /* Dimension de la matrice de couleurs */
     int nbsom;         /* Nombre de sommets dans le graphe */
     int nbcl;          /* nombre de couleurs */
     int *marque;        /* Tableau de marquage des sommets-zones : 0(Lzsg), 1(Bordure) ou 2(non-visite) */
@@ -78,27 +79,53 @@ int adjacent(Sommet *s1, Sommet *s2);
 Graphe_zone * cree_graphe_zone(int **M, int dim, int nbcl);
 
 
-/* Affiche le graphe_zone sous le format suivant :
- ** Graphe Zone **
-Nombre de sommets-zone : 4
-Zsg :
-Sommet n°3 . Couleur : 0 . Nb de cases : 2
-Sommets adjacents : n°2 n°1
-Liste des cases : (2, 2) (1, 2)
-******
-Sommet n°2 . Couleur : 2 . Nb de cases : 3
-Sommets adjacents : n°3 n°0
-Liste des cases : (2, 0) (2, 1) (1, 1)
-******
-Sommet n°1 . Couleur : 2 . Nb de cases : 1
-Sommets adjacents : n°3 n°0
-Liste des cases : (0, 2)
-******
-Sommet n°0 . Couleur : 1 . Nb de cases : 3
-Sommets adjacents : n°1 n°2
-Liste des cases : (1, 0) (0, 1) (0, 0)
-******
- */
+/* Cette fonction affiche un graphe-zone entièrement et suis le format suivant :
+    ** Graphe Zone **
+    Nombre de sommets-zone : 9
+    ====================
+    Zsg :
+    Sommet n°3 . Couleur : 5 . Nb de cases : 1
+    Sommets adjacents : n°4 n°6 n°0 
+    Liste des cases : (1, 0) 
+    ******
+    Sommet n°0 . Couleur : 3 . Nb de cases : 1
+    Sommets adjacents : n°1 n°3 
+    Liste des cases : (0, 0) 
+    ******
+    ====================
+    Bordure :
+    Sommet n°4 . Couleur : 1 . Nb de cases : 1
+    Sommets adjacents : n°5 n°7 n°3 n°1 
+    Liste des cases : (1, 1) 
+    ******
+    Sommet n°6 . Couleur : 2 . Nb de cases : 1
+    Sommets adjacents : n°7 n°3 
+    Liste des cases : (2, 0) 
+    ******
+    Sommet n°1 . Couleur : 6 . Nb de cases : 1
+    Sommets adjacents : n°2 n°4 n°0 
+    Liste des cases : (0, 1) 
+    ******
+    ====================
+    Autres :
+    Sommet n°8 . Couleur : 9 . Nb de cases : 1
+    Sommets adjacents : n°7 n°5 
+    Liste des cases : (2, 2) 
+    ******
+    Sommet n°7 . Couleur : 0 . Nb de cases : 1
+    Sommets adjacents : n°8 n°6 n°4 
+    Liste des cases : (2, 1) 
+    ******
+    Sommet n°5 . Couleur : 7 . Nb de cases : 1
+    Sommets adjacents : n°8 n°4 n°2 
+    Liste des cases : (1, 2) 
+    ******
+    Sommet n°2 . Couleur : 9 . Nb de cases : 1
+    Sommets adjacents : n°5 n°1 
+    Liste des cases : (0, 2) 
+    ******
+
+*/
 
 void afficher_graphe_zone(Graphe_zone *g_z);
 
