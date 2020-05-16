@@ -116,6 +116,8 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 				s->cl = cl;
 				s->cases = NULL;
 				s->sommet_adj = NULL;
+				s->distance = 1000000;
+				s->pere = NULL;
 				// cherche toutes les cases correspondants au sommet
 				trouve_zone_imp(M, dim, i, j, &taille, &s->cases);
 				s->nbcase_som = taille;
@@ -217,6 +219,9 @@ void agrandit_Zsg(Graphe_zone *g_z, Sommet *s) {
 
 int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 	int i, cpt = 0, cl, plus_grd_nbcase ;
+	ListeCase cases;
+	Cellule_som *Lzsg;
+	Cellule_som * new_sommetsZsg;
 	Graphe_zone *g_z = cree_graphe_zone(M, dim, nbcl);
 	agrandit_Zsg(g_z, g_z->mat[0][0]);
 	while(g_z->nb_som_zsg < g_z->nbsom) {
@@ -227,7 +232,7 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 				cl = i;
 			}
 		}
-		Cellule_som * new_sommetsZsg = g_z->B[cl];
+		new_sommetsZsg = g_z->B[cl];
 		while(new_sommetsZsg != NULL) {
 			agrandit_Zsg(g_z, new_sommetsZsg->sommet);
 			new_sommetsZsg = new_sommetsZsg->suiv;
@@ -235,9 +240,9 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 		detruit_liste_sommet(&g_z->B[cl]);
 		g_z->tailleB[cl] =  0;
 		if(aff == 1) {
-			Cellule_som *Lzsg = g_z->Lzsg;
+			Lzsg = g_z->Lzsg;
 			while(Lzsg != NULL) {
-				ListeCase cases = Lzsg->sommet->cases;
+				cases = Lzsg->sommet->cases;
 				while(cases != NULL) {
 					Grille_attribue_couleur_case(G, cases->i, cases->j, cl);
 					cases = cases->suiv;
@@ -258,18 +263,40 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
    le champ nb contient la taille de la file;
    La file est implémentée sous la forme d'une liste doublement chaînée (le champ prec de Cellule_som 
    servira dans l'implémentation des fonctions enfiler et défiler) */
-void initFile(File_Sommet **F)
-{
+void initFile(File_Sommet **F) {
+	//*F = (File_Sommet *)malloc(sizeof(File_Sommet));
+	(*F)->tete = NULL;
+	(*F)->queue = NULL;
+	(*F)->nb = 0;
 }
 
 /* Enfile le sommet s dans la file F (voir cours 2 si nécessaire). Complexité : 0(1) */
-void enfiler(File_Sommet *F, Sommet *s)
-{
+void enfiler(File_Sommet *F, Sommet *s) {
+	Cellule_som * new_elem = (Cellule_som *)malloc(sizeof(Cellule_som));
+	new_elem->sommet = s;
+	new_elem->suiv = F->queue;
+	new_elem->prec = NULL;
+	if(F->nb == 0) {
+		F->tete = new_elem;
+	}
+	else {
+		F->queue->prec = new_elem;
+	}
+	F->queue = new_elem;
+	F->nb += 1;
 }
 
 /* Defile la file F (voir cours 2 si nécessaire) . retourne NULL si F vide . Complexité : 0(1)*/
-Sommet *defiler(File_Sommet *F)
-{
+Sommet *defiler(File_Sommet *F) {
+	if(F->nb == 0) {
+		return NULL;
+	}
+	Sommet *s = F->tete->sommet;
+	Cellule_som *tmp = F->tete;
+	F->tete = F->tete->prec;
+	free(tmp);
+	F->nb -= 1;
+	return s;
 }
 
 /* Réalise le parcours en largeur depuis le sommet-zone racine dans le graphe g_z
@@ -278,8 +305,30 @@ Les champs distance et pere de tous les sommets-zones de g_z sont alors modifié
 contenir respectivement la distance minimale en nombre d'arcs de racine à chacun d'eux et l'adresse
 de leur pere dans l'arborescence du parcours en largeur (Graphe de liaison dans le cours d'algorithmique 1)
 Le pere de racine est NULL par définition*/
-void parcours_en_largeur(Graphe_zone *g_z, Sommet *racine)
-{
+void parcours_en_largeur(Graphe_zone *g_z, Sommet *racine) {
+	Cellule_som *cour;
+	Sommet *pere;
+	int i;
+	File_Sommet *F = (File_Sommet *)malloc(sizeof(File_Sommet));
+	initFile(&F);
+	
+	racine->distance = 0;
+	/* ici, comme tableau des visites, on utilise le tableau marque du graphe 
+	g_z->marque[racine->num] = 1;*/ // 1 si visité, 2 sinon
+	
+	enfiler(F, racine);
+	while(F->nb > 0) {
+		pere = defiler(F);
+		cour = pere->sommet_adj;
+		while(cour != NULL) {
+			if(cour->sommet->pere == NULL) {
+				cour->sommet->pere = pere;
+				cour->sommet->distance = pere->distance + 1;
+				enfiler(F, cour->sommet);
+			}
+			cour = cour->suiv;
+		}
+	}
 }
 
 /* Cette fonction réalise le calcul de la séquence de couleurs suivant la stratégie mixte
@@ -287,7 +336,88 @@ parcours en largeur + max-bordure : tout d’abord effectuer les choix de couleu
 au chemin déterminer par l’algorithme parcours_en_largeur. Ensuite, terminer le jeu en utilisant
 la stratégie max-bordure
 */
-int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff)
-{
+int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
+	Graphe_zone *g_z = cree_graphe_zone(M, dim, nbcl);
+	int i, cpt = 0, plus_grd_nbcase, distance, cl;
+	ListeCase cases;
+	Cellule_som *Lzsg;
+	Cellule_som * new_sommetsZsg;
+	Sommet *cour = g_z->mat[dim-1][dim-1];
+	parcours_en_largeur(g_z, g_z->mat[0][0]);
+	distance = cour->distance;
+	int *couleurs = (int*)malloc(distance * sizeof(int));
+	i = distance-1;
+	
+	/* parcours en largeur */
+	/* determine les couleurs a choisir 
+	   pour aller vers le bord en bas droite */
+	while(cour != g_z->mat[0][0]) {
+		couleurs[i] = cour->cl;
+		cour = cour->pere;
+		i -= 1;
+	}
+	/* agrandit la zone jusqu'au bord en bas a droite 
+	   a partir du tableau des couleurs */
+	agrandit_Zsg(g_z, g_z->mat[0][0]);
+	for(i = 0; i<distance; i++) {
+		cl = couleurs[i];
+		new_sommetsZsg = g_z->B[cl];
+		while(new_sommetsZsg != NULL) {
+			agrandit_Zsg(g_z, new_sommetsZsg->sommet);
+			new_sommetsZsg = new_sommetsZsg->suiv;
+		}
+		detruit_liste_sommet(&g_z->B[cl]);
+		g_z->tailleB[cl] =  0;
+		if(aff == 1) {
+			Lzsg = g_z->Lzsg;
+			while(Lzsg != NULL) {
+				cases = Lzsg->sommet->cases;
+				while(cases != NULL) {
+					Grille_attribue_couleur_case(G, cases->i, cases->j, cl);
+					cases = cases->suiv;
+				}
+				Lzsg = Lzsg->suiv;
+			}
+			Grille_redessine_Grille();
+			SDL_Delay(5000);
+		}
+	}
+	cpt = distance;
+	
+	/* max-bordure */
+	while(g_z->nb_som_zsg < g_z->nbsom) {
+		plus_grd_nbcase = 0;
+		for(i = 0; i<nbcl; i++) { // choix de la couleur 
+			if(g_z->tailleB[i] > plus_grd_nbcase) {
+				plus_grd_nbcase = g_z->tailleB[i];
+				cl = i;
+			}
+		}
+		new_sommetsZsg = g_z->B[cl];
+		while(new_sommetsZsg != NULL) {
+			agrandit_Zsg(g_z, new_sommetsZsg->sommet);
+			new_sommetsZsg = new_sommetsZsg->suiv;
+		}
+		detruit_liste_sommet(&g_z->B[cl]);
+		g_z->tailleB[cl] =  0;
+		if(aff == 1) {
+			Lzsg = g_z->Lzsg;
+			while(Lzsg != NULL) {
+				cases = Lzsg->sommet->cases;
+				while(cases != NULL) {
+					Grille_attribue_couleur_case(G, cases->i, cases->j, cl);
+					cases = cases->suiv;
+				}
+				Lzsg = Lzsg->suiv;
+			}
+			Grille_redessine_Grille();
+			SDL_Delay(5000);
+		}
+		cpt += 1;
+	}
+	
+	return cpt;	
 }
+
+
 

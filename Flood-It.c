@@ -63,7 +63,8 @@ int main(int argc,char**argv){
   */
 	//Graphe_zone *graphe = cree_graphe_zone(M, dim, nbcl);
 	//afficher_graphe_zone(graphe);
-	sequence_max_bordure(M, G, dim, nbcl, 1);
+	//sequence_max_bordure(M, G, dim, nbcl, 1);
+	sequence_parcours_largeur_puis_max_bordure(M, G, dim, nbcl, 1);
 
   Grille_attente_touche();
  
