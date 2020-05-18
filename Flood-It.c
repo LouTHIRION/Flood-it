@@ -63,9 +63,29 @@ int main(int argc,char**argv){
   */
 	//Graphe_zone *graphe = cree_graphe_zone(M, dim, nbcl);
 	//afficher_graphe_zone(graphe);
-	//sequence_max_bordure(M, G, dim, nbcl, 1);
-	sequence_parcours_largeur_puis_max_bordure(M, G, dim, nbcl, 1);
+	printf(" %d essais.\n", sequence_max_bordure(M, G, dim, nbcl, 1));
+	
+	Gene_instance_genere_matrice(dim, nbcl, nivdif, graine, M);
+	
+	 Grille_init(dim,nbcl, 500,&G);
 
+  Grille_ouvre_fenetre(G);
+
+  for (i=0;i<dim;i++)
+    for (j=0;j<dim;j++){
+      Grille_attribue_couleur_case(G,i,j,M[i][j]);
+    }
+
+  Grille_redessine_Grille();
+	
+	printf(" %d essais.\n", sequence_parcours_largeur_puis_max_bordure(M, G, dim, nbcl, 1));
+
+	
+  temps_final = clock ();
+  temps_cpu = (temps_final - temps_initial) * 1e-6;
+  //printf("temps cpu : %f\n",temps_cpu);
+  printf("%f\n",temps_cpu);
+	
   Grille_attente_touche();
  
   Grille_ferme_fenetre();

@@ -152,6 +152,37 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 	return G;
 }
 
+
+void liberer_graphe_zone(Graphe_zone *g_z) {
+	int i;
+	if(g_z->marque)
+		free(g_z->marque);
+	detruit_liste_sommet(&g_z->Lzsg);
+	for(i = 0; i<g_z->nbcl; i++) {
+		if(g_z->B[i])
+			detruit_liste_sommet(&g_z->B[i]);
+	}
+	if(g_z->B)
+		free(g_z->B);
+	if(g_z->tailleB)
+		free(g_z->tailleB);
+	Cellule_som *prec;
+	while(g_z->som != NULL) {
+		prec = g_z->som;
+		g_z->som = g_z->som->suiv;
+		detruit_liste(&prec->sommet->cases);
+		detruit_liste_sommet(&prec->sommet->sommet_adj);
+		free(prec);
+	}
+	for(i = 0; i<g_z->dim; i++) {
+		if(g_z->mat[i])
+			free(g_z->mat[i]);
+	}
+	if(g_z->mat)
+		free(g_z->mat);
+	free(g_z);
+}
+
 /* affichage graphe */
 void afficher_graphe_zone(Graphe_zone *g_z) {
 	printf("Nombre de sommet-zone : %d\n", g_z->nbsom);
@@ -254,6 +285,7 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 		}
 		cpt += 1;
 	}
+	liberer_graphe_zone(g_z);
 	return cpt;
 }
 
@@ -329,6 +361,7 @@ void parcours_en_largeur(Graphe_zone *g_z, Sommet *racine) {
 			cour = cour->suiv;
 		}
 	}
+	free(F);
 }
 
 /* Cette fonction réalise le calcul de la séquence de couleurs suivant la stratégie mixte
@@ -379,7 +412,7 @@ int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int 
 				Lzsg = Lzsg->suiv;
 			}
 			Grille_redessine_Grille();
-			SDL_Delay(5000);
+			SDL_Delay(100);
 		}
 	}
 	cpt = distance;
@@ -411,11 +444,13 @@ int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int 
 				Lzsg = Lzsg->suiv;
 			}
 			Grille_redessine_Grille();
-			SDL_Delay(5000);
+			SDL_Delay(100);
 		}
 		cpt += 1;
 	}
-	
+	if(couleurs)
+		free(couleurs);
+	liberer_graphe_zone(g_z);
 	return cpt;	
 }
 
