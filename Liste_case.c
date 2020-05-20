@@ -10,7 +10,7 @@ void init_liste(ListeCase *L){
 /* Ajoute un element en tete de liste */
 int ajoute_en_tete(ListeCase *L, int i, int j){
   Elnt_liste *elnt;
-  elnt=(Elnt_liste*) malloc(sizeof(Elnt_liste *));
+  elnt=(Elnt_liste*) malloc(sizeof(Elnt_liste));
   if (elnt==NULL) 
     return 0;
   elnt->suiv=*L;

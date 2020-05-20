@@ -185,12 +185,22 @@ void liberer_graphe_zone(Graphe_zone *g_z) {
 
 /* affichage graphe */
 void afficher_graphe_zone(Graphe_zone *g_z) {
-	printf("Nombre de sommet-zone : %d\n", g_z->nbsom);
+	int i;
+	printf("Nombre de sommet-zone : %d\n", g_z->nb_som_zsg);
 	printf("Zsg : \n");
-	Cellule_som *ListeSom = g_z->som;
-	while(ListeSom != NULL) {
-		afficher_sommet(ListeSom->sommet);
-		ListeSom = ListeSom->suiv;
+	Cellule_som *Lzsg = g_z->Lzsg;
+	while(Lzsg != NULL) {
+		afficher_sommet(Lzsg->sommet);
+		Lzsg = Lzsg->suiv;
+	}
+	printf("Bordure : \n");
+	for(i = 0; i<g_z->nbcl; i++) {
+		printf("tailleB[%d] : %d\n", i, g_z->tailleB[i]);
+		Cellule_som *B = g_z->B[i];
+		while(B != NULL) {
+			afficher_sommet(B->sommet);
+			B = B->suiv;
+		}
 	}
 }
 
@@ -286,6 +296,128 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 		cpt += 1;
 	}
 	liberer_graphe_zone(g_z);
+	return cpt;
+}
+
+/* Fonction qui fait une copie g_z_a_copier du graphe g_z 
+   sachant que les deux graphes sont initialisés en amont avec les memes valeurs,
+   on ne met a jour que les elements de la Zsg et de la bordures*/
+void copie_graphe_zone(Graphe_zone *g_z, Graphe_zone *g_z_a_copier) {
+	int i;
+	for(i = 0; i<g_z->nbsom; i++) {
+		g_z_a_copier->marque[i] = g_z->marque[i];
+	}
+	g_z_a_copier->tailleB[g_z_a_copier->Lzsg->sommet->cl] = g_z->tailleB[g_z_a_copier->Lzsg->sommet->cl];
+	g_z_a_copier->nb_som_zsg = g_z->nb_som_zsg;
+	Cellule_som *Lzsg = g_z->Lzsg;
+	Cellule_som *Lzsg_a_copier = g_z_a_copier->Lzsg;
+	Cellule_som *tmp;
+	while(Lzsg != NULL && Lzsg_a_copier != NULL) {
+		if(Lzsg->sommet->num != Lzsg_a_copier->sommet->num) {
+			ajoute_liste_sommet(&g_z_a_copier->B[Lzsg_a_copier->sommet->cl], Lzsg_a_copier->sommet);
+			tmp = Lzsg_a_copier;
+			g_z_a_copier->Lzsg = Lzsg_a_copier->suiv;
+			Lzsg_a_copier = Lzsg_a_copier->suiv;
+			free(tmp);
+		}
+		else {
+			Lzsg = Lzsg->suiv;
+			Lzsg_a_copier = Lzsg_a_copier->suiv;
+		}
+	}
+	for(i = 0; i<g_z->nbcl; i++) {
+		detruit_liste_sommet(&g_z_a_copier->B[i]);
+		if(g_z->tailleB[i] == 0) {
+			g_z_a_copier->tailleB[i] = 0;
+			
+		}
+		else {
+			g_z_a_copier->tailleB[i] = g_z->tailleB[i];
+			Cellule_som *B = g_z->B[i];
+			while(B != NULL) {
+				ajoute_liste_sommet(&g_z_a_copier->B[i], B->sommet);
+				B = B->suiv;
+			}
+		}
+	}
+}
+	
+/* Fonction qui realise le calcul de la sequence de couleur en appliquant 
+   la strategie de test en profondeur qui ressemble a la strategie de max-bordure 
+   mais qui s'efonce d'une profondeur en plus pour tester plus de possibilite.
+   Cette strategie est un peu plus efficace que la strategie max-bordure 
+   mais elle est beaucoup plus gourmande en temps de calcul et memoire. */
+int sequence_max_bord_test_en_profondeur(int **M, Grille *G, int dim, int nbcl, int aff) {
+	int i, j,k,  cpt = 0, cl, plus_grd_nbcase, nb_cases, profondeur = 2;
+	int *cls = (int *)malloc(profondeur * sizeof(int)); //suite de couleurs a jouer
+	ListeCase cases;
+	Cellule_som *Lzsg;
+	Cellule_som * new_sommetsZsg;
+	Cellule_som * new_sommetsZsg_copie;
+	Graphe_zone *g_z = cree_graphe_zone(M, dim, nbcl);
+	Graphe_zone *copie_g_z = cree_graphe_zone(M, dim, nbcl);
+	agrandit_Zsg(copie_g_z, copie_g_z->mat[0][0]);
+	agrandit_Zsg(g_z, g_z->mat[0][0]);
+	
+	while(g_z->nb_som_zsg < g_z->nbsom) {
+	
+		/* choix de la couleur */
+		plus_grd_nbcase = 0;
+		for(i = 0; i<nbcl; i++) {
+			if(copie_g_z->B[i] != NULL) {
+				nb_cases = copie_g_z->tailleB[i];
+				new_sommetsZsg_copie = copie_g_z->B[i];
+				while(new_sommetsZsg_copie != NULL) {
+					agrandit_Zsg(copie_g_z, new_sommetsZsg_copie->sommet);
+					new_sommetsZsg_copie = new_sommetsZsg_copie->suiv;
+				}
+				detruit_liste_sommet(&copie_g_z->B[i]);
+				copie_g_z->tailleB[i] =  0;
+				for(j = 0; j<nbcl; j++) {
+					if(nb_cases+copie_g_z->tailleB[j] > plus_grd_nbcase) {
+						plus_grd_nbcase = nb_cases+copie_g_z->tailleB[j];
+						cls[0] = i;
+						cls[1] = j;
+					}
+				}
+				copie_graphe_zone(g_z, copie_g_z);
+			}
+		}
+		
+		/* maj des valeurs avec */
+		for(i = 0; i<profondeur; i++) {
+			new_sommetsZsg = g_z->B[cls[i]];
+			new_sommetsZsg_copie = copie_g_z->B[cls[i]];
+			while(new_sommetsZsg != NULL) {
+				agrandit_Zsg(g_z, new_sommetsZsg->sommet);
+				new_sommetsZsg = new_sommetsZsg->suiv;
+				agrandit_Zsg(copie_g_z, new_sommetsZsg_copie->sommet);
+				new_sommetsZsg_copie = new_sommetsZsg_copie->suiv;
+			}
+			detruit_liste_sommet(&g_z->B[cls[i]]);
+			detruit_liste_sommet(&copie_g_z->B[cls[i]]);
+			g_z->tailleB[cls[i]] =  0;
+			copie_g_z->tailleB[cls[i]] = 0;
+		
+			/* affichage */
+			if(aff == 1) {
+				Lzsg = g_z->Lzsg;
+				while(Lzsg != NULL) {
+					cases = Lzsg->sommet->cases;
+					while(cases != NULL) {
+						Grille_attribue_couleur_case(G, cases->i, cases->j, cls[i]);
+						cases = cases->suiv;
+					}
+					Lzsg = Lzsg->suiv;
+				}
+				Grille_redessine_Grille();
+				SDL_Delay(100);
+			}
+			cpt += 1;
+		}
+	}
+	liberer_graphe_zone(g_z);
+	liberer_graphe_zone(copie_g_z);
 	return cpt;
 }
 
@@ -454,5 +586,126 @@ int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int 
 	return cpt;	
 }
 
+/* Fonction qui realise le calcul de la sequence de couleur suivant les strategie de parcour en largeur et test en profondeur */
+int sequence_ultime(int **M, Grille *G, int dim, int nbcl, int aff) {
+	int i, j,k,  cpt = 0, cl, plus_grd_nbcase, nb_cases, profondeur = 2;
+	int *cls = (int *)malloc(profondeur * sizeof(int)); //suite de couleurs a jouer
+	ListeCase cases;
+	Cellule_som *Lzsg;
+	Cellule_som * new_sommetsZsg;
+	Cellule_som * new_sommetsZsg_copie;
+	Graphe_zone *g_z = cree_graphe_zone(M, dim, nbcl);
+	Graphe_zone *copie_g_z = cree_graphe_zone(M, dim, nbcl);
+	agrandit_Zsg(copie_g_z, copie_g_z->mat[0][0]);
+	agrandit_Zsg(g_z, g_z->mat[0][0]);
+	
+	int distance;
+	Sommet *cour = g_z->mat[dim-1][dim-1];
+	parcours_en_largeur(g_z, g_z->mat[0][0]);
+	distance = cour->distance;
+	int *couleurs = (int*)malloc(distance * sizeof(int));
+	i = distance-1;
+	/* parcours en largeur */
+	/* determine les couleurs a choisir 
+	   pour aller vers le bord en bas droite */
+	while(cour != g_z->mat[0][0]) {
+		couleurs[i] = cour->cl;
+		cour = cour->pere;
+		i -= 1;
+	}
+	/* agrandit la zone jusqu'au bord en bas a droite 
+	   a partir du tableau des couleurs */
+	for(i = 0; i<distance; i++) {
+		cl = couleurs[i];
+		new_sommetsZsg = g_z->B[cl];
+		new_sommetsZsg_copie = copie_g_z->B[cl];
+		while(new_sommetsZsg != NULL) {
+			agrandit_Zsg(g_z, new_sommetsZsg->sommet);
+			new_sommetsZsg = new_sommetsZsg->suiv;
+			agrandit_Zsg(copie_g_z, new_sommetsZsg_copie->sommet);
+			new_sommetsZsg_copie = new_sommetsZsg_copie->suiv;
+		}
+		detruit_liste_sommet(&g_z->B[cl]);
+		detruit_liste_sommet(&copie_g_z->B[cl]);
+		copie_g_z->tailleB[cl] =  0;
+		g_z->tailleB[cl] =  0;
+		if(aff == 1) {
+			Lzsg = g_z->Lzsg;
+			while(Lzsg != NULL) {
+				cases = Lzsg->sommet->cases;
+				while(cases != NULL) {
+					Grille_attribue_couleur_case(G, cases->i, cases->j, cl);
+					cases = cases->suiv;
+				}
+				Lzsg = Lzsg->suiv;
+			}
+			Grille_redessine_Grille();
+			SDL_Delay(100);
+		}
+	}
+	cpt = distance;
+	
+	/* test en profondeur */
+	while(g_z->nb_som_zsg < g_z->nbsom) {
+	
+		/* choix de la couleur */
+		plus_grd_nbcase = 0;
+		for(i = 0; i<nbcl; i++) {
+			if(copie_g_z->B[i] != NULL) {
+				nb_cases = copie_g_z->tailleB[i];
+				new_sommetsZsg_copie = copie_g_z->B[i];
+				while(new_sommetsZsg_copie != NULL) {
+					agrandit_Zsg(copie_g_z, new_sommetsZsg_copie->sommet);
+					new_sommetsZsg_copie = new_sommetsZsg_copie->suiv;
+				}
+				detruit_liste_sommet(&copie_g_z->B[i]);
+				copie_g_z->tailleB[i] =  0;
+				for(j = 0; j<nbcl; j++) {
+					if(nb_cases+copie_g_z->tailleB[j] > plus_grd_nbcase) {
+						plus_grd_nbcase = nb_cases+copie_g_z->tailleB[j];
+						cls[0] = i;
+						cls[1] = j;
+					}
+				}
+				copie_graphe_zone(g_z, copie_g_z);
+			}
+		}
+		
+		/* maj des valeurs avec */
+		for(i = 0; i<profondeur; i++) {
+			new_sommetsZsg = g_z->B[cls[i]];
+			new_sommetsZsg_copie = copie_g_z->B[cls[i]];
+			while(new_sommetsZsg != NULL) {
+				agrandit_Zsg(g_z, new_sommetsZsg->sommet);
+				new_sommetsZsg = new_sommetsZsg->suiv;
+				agrandit_Zsg(copie_g_z, new_sommetsZsg_copie->sommet);
+				new_sommetsZsg_copie = new_sommetsZsg_copie->suiv;
+			}
+			detruit_liste_sommet(&g_z->B[cls[i]]);
+			detruit_liste_sommet(&copie_g_z->B[cls[i]]);
+			g_z->tailleB[cls[i]] =  0;
+			copie_g_z->tailleB[cls[i]] = 0;
+			
+		/* affichage */
+		if(aff == 1) {
+			Lzsg = g_z->Lzsg;
+			while(Lzsg != NULL) {
+				cases = Lzsg->sommet->cases;
+				while(cases != NULL) {
+					Grille_attribue_couleur_case(G, cases->i, cases->j, cls[i]);
+					cases = cases->suiv;
+				}
+				Lzsg = Lzsg->suiv;
+			}
+			Grille_redessine_Grille();
+			SDL_Delay(100);
+		}
+		cpt += 1;
+		}
+	}
+	liberer_graphe_zone(g_z);
+	liberer_graphe_zone(copie_g_z);
+	return cpt;
+}
 
 
