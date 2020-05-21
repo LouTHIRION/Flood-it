@@ -35,10 +35,12 @@ int appartient_Bordure(int i, int j, int cl, S_Zsg *S);
 /* Libere la memoire pour la structure et tous ses elements */
 void detruit_S_Zsg(S_Zsg *S);
 
-/* met a jour les champs Lzsg et B d'une S_Zsg lorsqu'une case k,l de couleur cl doit basculer dans Lzsg */
+/* met a jour les champs Lzsg et B d'une S_Zsg lorsqu'une case k,l de couleur cl 
+   doit basculer dans Lzsg */
 int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l);
 
-/* Algorithme tirant au sort une couleur: il utilise la fonction recursive pour determiner la Zsg */
+/* Algorithme tirant au sort une couleur: 
+   il utilise la fonction agrandit_zone pour determiner la Zsg */
 int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff);
 
 #endif

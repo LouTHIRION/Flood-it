@@ -1,25 +1,29 @@
 #include<stdio.h>
 #include "Entete_Fonctions.h"
 
+/* Retourne dans L la liste des cases de meme couleur que la case i,j 
+   et met -1 dans ces cases */
 void trouve_zone_rec(int **M, int nbcase, int i, int j, int *taille, ListeCase *L){
 	int cl = M[i][j];
 	ajoute_en_tete(L, i, j);
 	*taille += 1;
-	if(i<nbcase-1 && cl == M[i+1][j] && test_est_dans(i+1, j, L)==0) {
+	if(i<nbcase-1 && cl == M[i+1][j] && !test_est_dans(i+1, j, L)) {
 		trouve_zone_rec(M, nbcase, i+1, j, taille, L);
 	}
-	if(i>0 && cl == M[i-1][j] && test_est_dans(i-1, j, L)==0) {
+	if(i>0 && cl == M[i-1][j] && !test_est_dans(i-1, j, L)) {
 		trouve_zone_rec(M, nbcase, i-1, j, taille, L);
 	}
-	if(j<nbcase-1 && cl == M[i][j+1] && test_est_dans(i, j+1, L)==0) {
+	if(j<nbcase-1 && cl == M[i][j+1] && !test_est_dans(i, j+1, L)) {
 		trouve_zone_rec(M, nbcase, i, j+1, taille, L);
 	}
-	if(j>0 && cl == M[i][j-1] && test_est_dans(i, j-1, L)==0) {
+	if(j>0 && cl == M[i][j-1] && !test_est_dans(i, j-1, L)) {
 		trouve_zone_rec(M, nbcase, i, j-1, taille, L);
 	}
 }
 
 
+/* Calcule de la sequence de couleur aleatoirement 
+   utilisant la fonction trouve_zone_rec */
 int sequence_aleatoire_rec(int **M, Grille *G, int dim, int nbcl, int aff){
   int cpt=0;
   int cl = M[0][0];
@@ -53,6 +57,7 @@ int sequence_aleatoire_rec(int **M, Grille *G, int dim, int nbcl, int aff){
 }
 
 
+/* Version derecursifier de la fonction trouve_zone_rec */
 int trouve_zone_imp(int **M, int nbcase, int i, int j, int *taille, ListeCase *L){
 	int cl = M[i][j];
 	ListeCase *p = (ListeCase *) malloc(sizeof(ListeCase));
@@ -77,7 +82,7 @@ int trouve_zone_imp(int **M, int nbcase, int i, int j, int *taille, ListeCase *L
 	}
 }
 
-
+/* Calcule de sequence de couleurs aleatoirement utilisant la focntion trouve_zone_imp */
 int sequence_aleatoire_imp(int **M, Grille *G, int dim, int nbcl, int aff){
   int cpt=0;
   int cl = M[0][0];

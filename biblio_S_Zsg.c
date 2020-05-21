@@ -49,6 +49,7 @@ int appartient_Bordure(int i, int j, int cl, S_Zsg *S) {
 	return S->App[i][j] != -1 && S->App[i][j] != -2;
 }
 
+/* detruit S en librerant toutes les cases memoires */
 void detruit_S_Zsg(S_Zsg *S) {
 	int i;
 	detruit_liste(&S->Lzsg);
@@ -59,6 +60,8 @@ void detruit_S_Zsg(S_Zsg *S) {
 	free(S);
 }
 
+/* met a jour les champs Lzsg et B de Z lorsqu'une case k,l de couleur cl 
+   doit basculer dans Lzsg */
 int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 	int dim = Z->dim;
 	int nbCases = 0;
@@ -68,17 +71,18 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 	if(!appartient_Zsg(k, l, Z)) {
 		ajoute_en_tete(p, k, l);
 	}
+	/* parcour la grille pour mettre a jour la Zsg */
 	while(!test_liste_vide(p)) {
 		enleve_en_tete(p, &i, &j);
 		ajoute_Zsg(Z, i, j);
 		nbCases += 1;
 		
-		if(i<dim-1 && !test_est_dans(i+1, j, p)) {
-			if(cl == M[i+1][j] && !appartient_Zsg(i+1, j, Z)) {
-				ajoute_en_tete(p, i+1, j);
+		if(i<dim-1 && !test_est_dans(i+1, j, p)) {// pour chacune des cases qui n'ont pas encore ete visitee
+			if(cl == M[i+1][j] && !appartient_Zsg(i+1, j, Z)) { // soit elle est de couleur cl
+				ajoute_en_tete(p, i+1, j); // alors on l'ajoute a la Zsg
 			}
-			else if(cl != M[i+1][j] && !appartient_Bordure(i+1, j, M[i+1][j], Z)) {
-				ajoute_Bordure(Z, i+1, j, M[i+1][j]);
+			else if(cl != M[i+1][j] && !appartient_Bordure(i+1, j, M[i+1][j], Z)) { // soit elle est d'une autre couleur
+				ajoute_Bordure(Z, i+1, j, M[i+1][j]); // alors on l'ajoute a la bordure
 			}
 		}
 		
@@ -112,7 +116,8 @@ int agrandit_Zsg(int **M, S_Zsg *Z, int cl, int k, int l) {
 	return nbCases;
 }
 	
-			
+/* Algo tirant au sort une couleur : 
+   il utilise la fonction agrandit_zone pour determiner la Zsg */
 int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
 	int taille_Zsg;
 	int cl = rand() % nbcl;
@@ -123,10 +128,15 @@ int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
 	S_Zsg *S = (S_Zsg *)malloc(sizeof(S_Zsg));
 	init_Zsg(S, dim, nbcl);
 	taille_Zsg = agrandit_Zsg(M, S, M[0][0], 0, 0);
+	
 	while(taille_Zsg < dim*dim) {
-		while(cl == M[0][0]) { // tirage de la couleur
+	
+		/* tirage de la couleur */
+		while(cl == M[0][0]) {
   			cl = rand() % nbcl;
   		}
+  		
+  		/* mis a jour de la Zsg et de la grille G */
   		Case_zone = S->Lzsg;
   		while(Case_zone != NULL) {
   			M[Case_zone->i][Case_zone->j] = cl;
@@ -135,25 +145,26 @@ int sequence_aleatoire_rapide(int **M, Grille *G, int dim, int nbcl, int aff) {
   			}
   			Case_zone = Case_zone->suiv;
   		}
-  		Case_bordure = S->B[cl];
+  		
+  		/* appel de la fonction agrandit_zone pour chaque element de la bordure */
+  		Case_bordure = S->B[cl]; 
   		while(Case_bordure != NULL) {
 	 		taille_Zsg += agrandit_Zsg(M, S, cl, Case_bordure->i, Case_bordure->j);
 	 		Case_bordure = Case_bordure->suiv;
 	 	}
-	 	detruit_liste(&S->B[cl]);
 	 	
+	 	detruit_liste(&S->B[cl]); // mis a jour de la bordure
+	 	
+	 	/* affichage */
 	 	if(aff == 1) {
 	 		Grille_redessine_Grille();
 	 		SDL_Delay(100);
 	 	}
+	 	
 	 	cpt += 1;
 	}
 	detruit_S_Zsg(S);
 	return cpt;		
 }
-
-
-
-
 
 

@@ -51,6 +51,8 @@ int adjacent(Sommet *s1, Sommet *s2) {
 	return 0;
 }
 
+
+
 /* La finalité de cette fonction est d'allouer de la mémoire pour une structure de type Graphe_zone puis
    d'instancier l'ensemble de ces champs à partir de la matrice M de dimension dim et contenant potentiellement 
    nbcl couleurs (des entiers) différents. Concrètement, à la sortie de cette fonction, les variables (champs) de la structure
@@ -153,6 +155,8 @@ Graphe_zone *cree_graphe_zone(int **M, int dim, int nbcl) {
 }
 
 
+
+/* Detruit entierement le graphe g_z en liberant toutes les zones memoires occupees */
 void liberer_graphe_zone(Graphe_zone *g_z) {
 	int i;
 	if(g_z->marque)
@@ -183,6 +187,8 @@ void liberer_graphe_zone(Graphe_zone *g_z) {
 	free(g_z);
 }
 
+
+
 /* affichage graphe */
 void afficher_graphe_zone(Graphe_zone *g_z) {
 	int i;
@@ -193,7 +199,7 @@ void afficher_graphe_zone(Graphe_zone *g_z) {
 		afficher_sommet(Lzsg->sommet);
 		Lzsg = Lzsg->suiv;
 	}
-	printf("Bordure : \n");
+	/*printf("Bordure : \n");
 	for(i = 0; i<g_z->nbcl; i++) {
 		printf("tailleB[%d] : %d\n", i, g_z->tailleB[i]);
 		Cellule_som *B = g_z->B[i];
@@ -201,7 +207,7 @@ void afficher_graphe_zone(Graphe_zone *g_z) {
 			afficher_sommet(B->sommet);
 			B = B->suiv;
 		}
-	}
+	}*/
 }
 
 /* affichage sommet (utilisee dans le fonction affichage graphe) */
@@ -218,6 +224,7 @@ void afficher_sommet(Sommet *s) {
 	affiche_liste(&s->cases);
 	printf("\n******\n");
 }
+
 
 
 /* Cette fonction a pour but de mettre à jour les champs Lzsg et B de g_z (utilisation de 
@@ -266,13 +273,15 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 	Graphe_zone *g_z = cree_graphe_zone(M, dim, nbcl);
 	agrandit_Zsg(g_z, g_z->mat[0][0]);
 	while(g_z->nb_som_zsg < g_z->nbsom) {
+		/* choix de la couleur */
 		plus_grd_nbcase = 0;
-		for(i = 0; i<nbcl; i++) { // choix de la couleur 
+		for(i = 0; i<nbcl; i++) {
 			if(g_z->tailleB[i] > plus_grd_nbcase) {
 				plus_grd_nbcase = g_z->tailleB[i];
 				cl = i;
 			}
 		}
+		/* mis a jour des valeurs */
 		new_sommetsZsg = g_z->B[cl];
 		while(new_sommetsZsg != NULL) {
 			agrandit_Zsg(g_z, new_sommetsZsg->sommet);
@@ -280,6 +289,7 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 		}
 		detruit_liste_sommet(&g_z->B[cl]);
 		g_z->tailleB[cl] =  0;
+		/* affichage */
 		if(aff == 1) {
 			Lzsg = g_z->Lzsg;
 			while(Lzsg != NULL) {
@@ -299,6 +309,8 @@ int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff) {
 	return cpt;
 }
 
+
+
 /* Fonction qui fait une copie g_z_a_copier du graphe g_z 
    sachant que les deux graphes sont initialisés en amont avec les memes valeurs,
    on ne met a jour que les elements de la Zsg et de la bordures*/
@@ -309,6 +321,7 @@ void copie_graphe_zone(Graphe_zone *g_z, Graphe_zone *g_z_a_copier) {
 	}
 	g_z_a_copier->tailleB[g_z_a_copier->Lzsg->sommet->cl] = g_z->tailleB[g_z_a_copier->Lzsg->sommet->cl];
 	g_z_a_copier->nb_som_zsg = g_z->nb_som_zsg;
+	/* mis a jour de la liste Lzsg */
 	Cellule_som *Lzsg = g_z->Lzsg;
 	Cellule_som *Lzsg_a_copier = g_z_a_copier->Lzsg;
 	Cellule_som *tmp;
@@ -325,6 +338,7 @@ void copie_graphe_zone(Graphe_zone *g_z, Graphe_zone *g_z_a_copier) {
 			Lzsg_a_copier = Lzsg_a_copier->suiv;
 		}
 	}
+	/* mis a jour du tableau de liste B */
 	for(i = 0; i<g_z->nbcl; i++) {
 		detruit_liste_sommet(&g_z_a_copier->B[i]);
 		if(g_z->tailleB[i] == 0) {
@@ -421,6 +435,8 @@ int sequence_max_bord_test_en_profondeur(int **M, Grille *G, int dim, int nbcl, 
 	return cpt;
 }
 
+
+
 /* Cette fonction initialise une file de sommet-zone
    le champ tete pointe sur la capsule contenant le plus ancien sommet dans la file
    tandis que le champ queue pointe sur la capsule contenant le sommet rajouté dernièrement;
@@ -477,8 +493,7 @@ void parcours_en_largeur(Graphe_zone *g_z, Sommet *racine) {
 	initFile(&F);
 	
 	racine->distance = 0;
-	/* ici, comme tableau des visites, on utilise le tableau marque du graphe 
-	g_z->marque[racine->num] = 1;*/ // 1 si visité, 2 sinon
+	
 	
 	enfiler(F, racine);
 	while(F->nb > 0) {
@@ -585,6 +600,8 @@ int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int 
 	liberer_graphe_zone(g_z);
 	return cpt;	
 }
+
+
 
 /* Fonction qui realise le calcul de la sequence de couleur suivant les strategie de parcour en largeur et test en profondeur */
 int sequence_ultime(int **M, Grille *G, int dim, int nbcl, int aff) {

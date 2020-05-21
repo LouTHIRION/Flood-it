@@ -126,7 +126,6 @@ Graphe_zone * cree_graphe_zone(int **M, int dim, int nbcl);
     ******
 
 */
-
 void afficher_graphe_zone(Graphe_zone *g_z);
 
 /* Fonction d'affichage d'un sommet : utilisee dans afficher_graphe_zone */
@@ -134,19 +133,25 @@ void afficher_sommet(Sommet *s);
 
 /* Met a jour les champs du graphe_zone g_z en ajoutant s a la Zsg : suivant le meme principe que la fonction 3.2 (mais adapte pour un sommet-zone)*/
 void agrandit_Zsg(Graphe_zone *g_z, Sommet *s);
+
 /* Calcule une sequence de couleurs en appliquant la strategie max-bordure : similaire a la fonction 3.3*/
 int sequence_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff);
+
 /* Permet de mettre a jour une copie d'un graphe initialise en amont 
    avec la fonction cree_graphe_zone et les meme valeurs que pour le graphe 
    utilise pour la strategie test en profondeur */
 void copie_graphe_zone(Graphe_zone *g_z, Graphe_zone *g_z_a_copier);
+
 /* calcule sequence couleur avec la meme strategie que la fonction sequence_max_bordure 
    mais avec une profondeur de plus */
 int sequence_max_bord_test_en_profondeur(int **M, Grille *G, int dim, int nbcl, int aff);
+
 /* Realise un parcours en largeur dans le graphe g_z a partir du sommet racine : mise a jour des champs distance et pere de tous les sommets-zones de g_z */
 void parcours_en_largeur(Graphe_zone *g_z, Sommet *racine);
+
 /* Calcule  une sequence de couleurs en appliquant la strategie parcours en largeur puis max-bordure*/
 int sequence_parcours_largeur_puis_max_bordure(int **M, Grille *G, int dim, int nbcl, int aff);
+
 /* calcule sequence couleur en appliquant la strategie parcours en largeur puis test en profondeur */
 int sequence_ultime(int **M, Grille *G, int dim, int nbcl, int aff);
 

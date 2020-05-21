@@ -23,14 +23,14 @@ biblio_graphe.o: biblio_graphe.c biblio_graphe.h Liste_case.h Entete_Fonctions.h
 Flood-It_Partie1.o: Flood-It_Partie1.c
 	gcc -c Flood-It_Partie1.c 
 
-Flood-It_Partie1: Flood-It_Partie1.o Liste_case.o  API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o
-	gcc -o Flood-It_Partie1 Flood-It_Partie1.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o -lSDL
+Flood-It_P1: Flood-It_Partie1.o Liste_case.o  API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o
+	gcc -o Flood-It_P1 Flood-It_Partie1.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_S_Zsg.o -lSDL
 
-Flood-It.o: Flood-It.c
-	gcc -c Flood-It.c
+Flood-It_Partie2.o: Flood-It_Partie2.c
+	gcc -c Flood-It_Partie2.c
 
-Flood-It: Flood-It.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_graphe.o
-	gcc -o Flood-It Flood-It.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_graphe.o -lSDL
+Flood-It_P2: Flood-It_Partie2.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_graphe.o
+	gcc -o Flood-It_P2 Flood-It_Partie2.o Liste_case.o API_Grille.o API_Gene_instance.o Fonctions_exo1.o biblio_graphe.o -lSDL
 
 clean:
 	rm -f *.o $(EXEC)

@@ -69,13 +69,3 @@ void affiche_liste(ListeCase *L) {
 	}
 }
 
-/*int main() {
-	ListeCase *l = malloc(sizeof(ListeCase));
-	init_liste(l);
-	ajoute_en_tete(l, 0, 0);
-	//ajoute_en_tete(l, 1, 2);
-	affiche_liste(l);
-	printf("test est dans %d\n", test_est_dans(0, 1, l));
-	
-	return 0;
-}*/
