@@ -1,4 +1,4 @@
-EXEC=Flood-It_Partie1 Flood-It
+EXEC=Flood-It_P1 Flood-It_P2
 
 all: $(EXEC)
 
